@@ -1,13 +1,16 @@
 {
   "name": "paint-picker",
   "productName": "Paint Picker",
-  "version": "1.0.0",
-  "description": "Пипетка для подбора красок Vallejo Game Color и рецептов смешивания",
+  "version": "1.1.0",
+  "description": "Пипетка для моделистов: краски по фото, рецепты смешивания, палитры проектов и примерка на 3D-модели",
   "author": "LeoDex",
   "private": true,
   "main": "main.js",
   "scripts": {
+    "build": "node scripts/build-3d.js",
+    "prestart": "npm run build",
     "start": "electron .",
+    "predist": "npm run build",
     "dist": "electron-builder --win"
   },
   "build": {
@@ -15,6 +18,7 @@
     "files": [
       "main.js",
       "src/**/*",
+      "!src/three-view.src.js",
       "build/icon.png"
     ],
     "electronLanguages": [
@@ -38,6 +42,9 @@
   },
   "devDependencies": {
     "electron": "^44.7.0",
-    "electron-builder": "^26.15.3"
+    "electron-builder": "^26.15.3",
+    "esbuild": "^0.28.2",
+    "three": "^0.186.1",
+    "three-mesh-bvh": "^0.9.16"
   }
 }

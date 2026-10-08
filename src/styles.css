@@ -11,6 +11,7 @@
   --muted: #9599a4;
   --accent: #93a3ff;
   --accent-ink: #0d1024;
+  --danger: #ff8f8f;
   --radius: 12px;
   --mono: "Cascadia Mono", Consolas, "SF Mono", monospace;
 }
@@ -38,7 +39,9 @@ body {
 }
 
 button,
-input {
+input,
+select,
+textarea {
   font: inherit;
   color: inherit;
 }
@@ -47,18 +50,92 @@ button {
   cursor: pointer;
 }
 
+button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
+svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+h1,
+h3 {
+  margin: 0;
+  font-weight: 600;
+}
+
+h3 {
+  margin: 20px 0 8px;
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ───── Каркас ───── */
+
 .app {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 400px;
+  grid-template-columns: 68px minmax(0, 1fr);
   height: 100vh;
 }
 
-/* ───── Область с фото ───── */
+.rail {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 6px;
+  border-right: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.rail button {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: 10px 0 8px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.rail svg {
+  width: 22px;
+  height: 22px;
+}
+
+.rail button:hover {
+  color: var(--text);
+}
+
+.rail button.on {
+  background: var(--card-hi);
+  color: var(--text);
+}
+
+.screen {
+  min-width: 0;
+  height: 100vh;
+}
+
+.screen.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 440px;
+}
+
+/* ───── Область с фото или моделью ───── */
 
 .stage {
   position: relative;
@@ -81,6 +158,16 @@ button {
   cursor: grabbing;
 }
 
+.three {
+  position: absolute;
+  inset: 0;
+}
+
+.three canvas {
+  display: block;
+  touch-action: none;
+}
+
 .empty {
   position: absolute;
   inset: 0;
@@ -90,7 +177,7 @@ button {
 }
 
 .empty-card {
-  max-width: 380px;
+  max-width: 400px;
   padding: 40px 36px;
   text-align: center;
   border: 1.5px dashed #3a3e47;
@@ -102,12 +189,12 @@ button {
   width: 48px;
   height: 48px;
   color: var(--muted);
+  stroke-width: 2.4;
 }
 
 .empty-card h1 {
   margin: 14px 0 6px;
   font-size: 22px;
-  font-weight: 600;
   letter-spacing: -0.01em;
 }
 
@@ -125,7 +212,7 @@ button {
   white-space: nowrap;
 }
 
-.btn:hover {
+.btn:hover:not(:disabled) {
   background: #30343c;
 }
 
@@ -142,6 +229,17 @@ button {
   background: #a7b4ff;
 }
 
+.btn.danger {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.btn.drop::after {
+  content: "▾";
+  margin-left: 8px;
+  color: var(--muted);
+}
+
 .toolbar,
 .zoom,
 .hint {
@@ -156,7 +254,8 @@ button {
 .toolbar {
   top: 14px;
   left: 14px;
-  gap: 12px;
+  flex-wrap: wrap;
+  gap: 8px 12px;
   max-width: calc(100% - 28px);
   padding: 8px;
   border-radius: 14px;
@@ -177,7 +276,7 @@ button {
 }
 
 .field input[type="range"] {
-  width: 120px;
+  width: 110px;
   accent-color: var(--accent);
 }
 
@@ -201,11 +300,17 @@ button {
   border-radius: 7px;
   background: transparent;
   color: var(--muted);
+  white-space: nowrap;
 }
 
 .seg button.on {
   background: var(--card-hi);
   color: var(--text);
+}
+
+.seg.wide button {
+  flex: 1;
+  padding: 0 6px;
 }
 
 .zoom {
@@ -246,10 +351,13 @@ button {
   left: 14px;
   bottom: 14px;
   height: 38px;
+  max-width: calc(100% - 28px);
   padding: 0 12px;
   border-radius: 12px;
+  overflow: hidden;
   color: var(--muted);
   font-size: 12.5px;
+  white-space: nowrap;
   pointer-events: none;
 }
 
@@ -279,14 +387,24 @@ button {
   font: 12.5px var(--mono);
 }
 
-.drop-veil {
+.busy {
   position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(16, 17, 20, 0.7);
+  font-size: 16px;
+}
+
+.drop-veil {
+  position: fixed;
   inset: 12px;
+  z-index: 60;
   display: grid;
   place-items: center;
   border: 2px dashed var(--accent);
   border-radius: 18px;
-  background: rgba(16, 17, 20, 0.82);
+  background: rgba(16, 17, 20, 0.86);
   font-size: 18px;
   font-weight: 600;
   pointer-events: none;
@@ -295,6 +413,7 @@ button {
 /* ───── Правая панель ───── */
 
 .panel {
+  position: relative;
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -327,10 +446,17 @@ button {
   min-width: 0;
 }
 
+.hex-row {
+  display: flex;
+  gap: 8px;
+}
+
 .hex {
+  flex: 1;
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 0;
 }
 
 .hex span {
@@ -358,8 +484,16 @@ button {
   font-weight: 400;
 }
 
+.current-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 26px;
+  margin-top: 5px;
+}
+
 .rgb {
-  margin-top: 7px;
   color: var(--muted);
   font-variant-numeric: tabular-nums;
 }
@@ -370,7 +504,7 @@ button {
   place-items: center;
   width: 38px;
   height: 38px;
-  align-self: flex-start;
+  padding: 0;
   border: 1px solid var(--line);
   border-radius: 9px;
   background: var(--card);
@@ -385,14 +519,14 @@ button {
   background: var(--card-hi);
 }
 
-.icon-btn:disabled {
-  opacity: 0.35;
-  cursor: default;
+.pane-head .icon-btn {
+  width: 34px;
+  height: 34px;
 }
 
 .tabs {
   display: flex;
-  gap: 4px;
+  gap: 2px;
   margin: 0 18px;
   padding: 4px;
   border-radius: 12px;
@@ -400,8 +534,9 @@ button {
 }
 
 .tabs button {
-  flex: 1;
+  flex: 1 1 auto;
   height: 34px;
+  padding: 0 8px;
   border: 0;
   border-radius: 9px;
   background: transparent;
@@ -418,15 +553,18 @@ button {
 .count {
   display: inline-block;
   min-width: 20px;
-  margin-left: 4px;
+  margin-left: 3px;
   padding: 0 6px;
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.09);
   font-size: 12px;
+  font-weight: 500;
+  text-align: center;
   font-variant-numeric: tabular-nums;
 }
 
 .pane {
+  position: relative;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -436,15 +574,25 @@ button {
 .pane-head {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   min-height: 52px;
   padding: 10px 18px 8px;
+}
+
+.pane-head.second {
+  min-height: 0;
+  padding-top: 0;
+  gap: 12px;
 }
 
 .pane-title {
   flex: 1;
   color: var(--muted);
   font-size: 12.5px;
+}
+
+.grow {
+  flex: 1;
 }
 
 .check {
@@ -463,14 +611,29 @@ button {
   accent-color: var(--accent);
 }
 
-.pane-head input[type="search"] {
-  flex: 1;
+select,
+input[type="search"],
+#projName,
+textarea,
+.drawer-head input {
   min-width: 0;
   height: 34px;
   padding: 0 10px;
   border: 1px solid var(--line);
   border-radius: 9px;
   background: var(--bg);
+}
+
+.pane-head select,
+.pane-head input[type="search"],
+#projName {
+  flex: 1;
+}
+
+input[type="search"],
+#projName,
+textarea,
+.drawer-head input {
   user-select: text;
 }
 
@@ -495,6 +658,14 @@ button {
   scrollbar-color: #3a3e47 transparent;
 }
 
+.list.side {
+  padding: 0 18px 18px;
+}
+
+.list.side h3:first-child {
+  margin-top: 6px;
+}
+
 .note {
   margin: 8px 6px;
   color: var(--muted);
@@ -507,6 +678,45 @@ button {
 
 .note .btn {
   margin-top: 14px;
+}
+
+/* Выпадающий список наборов */
+.pop {
+  position: absolute;
+  top: 50px;
+  left: 18px;
+  z-index: 5;
+  width: 280px;
+  max-height: calc(100% - 66px);
+  padding: 6px 14px 12px;
+  overflow-y: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #1f2126;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+}
+
+.pop-title {
+  margin: 10px 0 4px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.pop .check {
+  padding: 5px 0;
+  color: var(--text);
+}
+
+.pop .check span {
+  flex: 1;
+}
+
+.pop .check small {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
 }
 
 /* ───── Строка краски ───── */
@@ -523,7 +733,7 @@ button {
   background: var(--card);
 }
 
-.row.pick {
+.pick {
   cursor: pointer;
 }
 
@@ -536,7 +746,7 @@ button {
 }
 
 .chip.small {
-  width: 28px;
+  width: 36px;
   height: 28px;
   border-radius: 7px;
 }
@@ -555,8 +765,12 @@ button {
 }
 
 .row-main small {
+  display: block;
+  overflow: hidden;
   color: var(--muted);
   font-size: 12.5px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .code {
@@ -574,7 +788,7 @@ button {
 
 .pct {
   flex: none;
-  min-width: 46px;
+  min-width: 42px;
   text-align: right;
   color: var(--muted);
   font-weight: 600;
@@ -585,12 +799,14 @@ button {
   color: var(--text);
 }
 
-.own {
+.own,
+.mini {
   flex: none;
   display: grid;
   place-items: center;
   width: 30px;
   height: 30px;
+  padding: 0;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: transparent;
@@ -599,7 +815,8 @@ button {
   line-height: 1;
 }
 
-.own:hover {
+.own:hover,
+.mini:hover {
   border-color: #4a4e58;
   color: var(--text);
 }
@@ -609,6 +826,62 @@ button {
   background: var(--accent);
   color: var(--accent-ink);
   font-weight: 700;
+}
+
+.have {
+  flex: none;
+  padding: 1px 7px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--muted);
+  font-size: 11.5px;
+}
+
+.have.need {
+  background: none;
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+/* ───── Тень и блик ───── */
+
+.tones {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 0 18px 10px;
+}
+
+.tone-card {
+  min-width: 0;
+  padding: 8px 10px 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--card);
+}
+
+.tone-card.pick:hover {
+  background: var(--card-hi);
+}
+
+.tone-card > small {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.tone-card p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+.tone-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
 }
 
 /* ───── Рецепты ───── */
@@ -642,7 +915,9 @@ button {
   font-weight: 600;
 }
 
-.recipe {
+.recipe,
+.entry,
+.shop {
   margin: 0 4px 12px;
   padding: 14px;
   border: 1px solid var(--line);
@@ -721,10 +996,478 @@ button {
   font-size: 12.5px;
 }
 
+/* ───── Палитра проекта ───── */
+
+.entry {
+  padding: 12px;
+}
+
+.entry-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.entry-swatch {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+
+.entry-name {
+  flex: 1;
+  min-width: 0;
+}
+
+.entry-name input {
+  width: 100%;
+  height: 26px;
+  padding: 0 6px;
+  margin-left: -6px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  font-weight: 600;
+  user-select: text;
+}
+
+.entry-name input:hover,
+.entry-name input:focus {
+  border-color: var(--line);
+  background: var(--bg);
+}
+
+.entry-name small {
+  display: block;
+  color: var(--muted);
+}
+
+.tone {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+}
+
+.tone-label {
+  flex: none;
+  width: 36px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.tone select {
+  flex: 1;
+  height: 30px;
+  padding: 0 6px;
+}
+
+.tone-none {
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+.shop-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.shop-head .check {
+  margin-left: auto;
+}
+
+.shop .row {
+  padding: 6px 0;
+}
+
+.shop .row:hover {
+  background: none;
+}
+
+.shop .btn {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.shop .note {
+  margin: 4px 0 0;
+}
+
+/* ───── 3D: боковая панель ───── */
+
+.ink-now {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.ink-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) repeat(3, 44px);
+  gap: 6px 8px;
+  align-items: center;
+}
+
+.ink-grid small {
+  color: var(--muted);
+  font-size: 11px;
+  text-align: center;
+}
+
+.ink-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ink {
+  width: 44px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+
+.ink.none {
+  box-shadow: inset 0 0 0 1px var(--line);
+  opacity: 0.5;
+}
+
+.ink.on {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+
+.ink-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  color: var(--muted);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* ───── Журнал ───── */
+
+.screen.journal {
+  display: flex;
+  flex-direction: column;
+  background: var(--stage);
+}
+
+.board-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 22px 14px;
+}
+
+.board-head h1 {
+  font-size: 22px;
+  letter-spacing: -0.01em;
+}
+
+.board {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  min-height: 0;
+  padding: 0 22px 22px;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel);
+}
+
+.col.over {
+  border-color: var(--accent);
+}
+
+.col-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px 8px;
+}
+
+.col-body {
+  flex: 1;
+  min-height: 0;
+  padding: 4px 10px 12px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #3a3e47 transparent;
+}
+
+.col-empty {
+  margin: 18px 8px;
+  color: #5d616b;
+  font-size: 12.5px;
+  text-align: center;
+}
+
+.card {
+  margin-bottom: 10px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+  cursor: pointer;
+}
+
+.card:hover {
+  border-color: #454952;
+}
+
+.card-cover {
+  height: 120px;
+  background: var(--bg);
+}
+
+.card-cover img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.stripes {
+  display: flex;
+  height: 100%;
+}
+
+.stripes i {
+  flex: 1;
+}
+
+.no-cover {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  color: #4f535d;
+  font-size: 12.5px;
+}
+
+.card-body {
+  padding: 10px 12px 12px;
+}
+
+.card-body b {
+  display: block;
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-body small {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.dots {
+  display: flex;
+  gap: 4px;
+  margin: 7px 0 6px;
+}
+
+.dots i {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+}
+
+.drawer-veil,
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: rgba(8, 9, 11, 0.6);
+}
+
+.drawer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  width: min(480px, 100%);
+  border-left: 1px solid var(--line);
+  background: var(--panel);
+  box-shadow: -20px 0 50px rgba(0, 0, 0, 0.45);
+}
+
+.drawer-head {
+  display: flex;
+  gap: 8px;
+  padding: 16px 18px 12px;
+}
+
+.drawer-head input {
+  flex: 1;
+  height: 38px;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.drawer-body {
+  flex: 1;
+  min-height: 0;
+  padding: 0 18px 20px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #3a3e47 transparent;
+}
+
+.drawer-body .row {
+  padding: 6px 0;
+}
+
+.drawer-body .row:hover {
+  background: none;
+}
+
+.drawer-body .note {
+  margin: 6px 0 0;
+}
+
+.drawer-body .actions {
+  margin-top: 20px;
+}
+
+.photos {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.photo {
+  aspect-ratio: 1;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+}
+
+.photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photo.add {
+  border-style: dashed;
+  color: var(--muted);
+  font-size: 26px;
+}
+
+.photo.add:hover {
+  color: var(--text);
+}
+
+textarea {
+  display: block;
+  width: 100%;
+  height: auto;
+  padding: 8px 10px;
+  line-height: 1.45;
+  resize: vertical;
+}
+
+.lightbox {
+  z-index: 30;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  justify-items: center;
+  gap: 14px;
+  padding: 28px;
+  background: rgba(8, 9, 11, 0.9);
+}
+
+.lightbox img {
+  max-width: 100%;
+  max-height: 100%;
+  min-height: 0;
+  border-radius: 10px;
+  object-fit: contain;
+}
+
+.lightbox-bar {
+  display: flex;
+  gap: 8px;
+}
+
+/* ───── Окно аналогов ───── */
+
+.dialog {
+  width: min(460px, calc(100% - 40px));
+  max-height: min(640px, calc(100% - 40px));
+  padding: 16px 12px 12px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--panel);
+  color: var(--text);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+}
+
+.dialog[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+.dialog::backdrop {
+  background: rgba(8, 9, 11, 0.6);
+}
+
+.dialog-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dialog-head .row {
+  flex: 1;
+  min-width: 0;
+}
+
+.dialog-head .row:hover {
+  background: none;
+}
+
+.dialog .list {
+  padding: 0;
+}
+
 .toast {
   position: fixed;
   left: 50%;
-  bottom: 28px;
+  bottom: 68px;
+  z-index: 70;
+  max-width: calc(100% - 40px);
   padding: 9px 16px;
   border: 1px solid var(--line);
   border-radius: 10px;
@@ -734,15 +1477,9 @@ button {
   pointer-events: none;
 }
 
-@media (max-width: 860px) {
-  .app {
-    grid-template-columns: 1fr;
-    grid-template-rows: minmax(0, 45vh) minmax(0, 1fr);
-  }
-
-  .panel {
-    border-top: 1px solid var(--line);
-    border-left: 0;
+@media (max-width: 1040px) {
+  .screen.split {
+    grid-template-columns: minmax(0, 1fr) 400px;
   }
 
   .hint {

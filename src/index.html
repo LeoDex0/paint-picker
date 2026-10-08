@@ -7,114 +7,286 @@
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; img-src 'self' blob: data:; style-src 'self' 'unsafe-inline'"
     />
-    <title>Paint Picker — Vallejo Game Color</title>
+    <title>Paint Picker</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <div class="app">
-      <main class="stage" id="stage">
-        <canvas class="view" id="view"></canvas>
+      <nav class="rail" id="rail">
+        <button type="button" data-screen="pipette" class="on" title="Цвет с фото, краски и рецепты">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="8" />
+            <circle cx="12" cy="12" r="2.5" />
+            <path d="M12 1.5v4M12 18.5v4M1.5 12h4M18.5 12h4" />
+          </svg>
+          <span>Пипетка</span>
+        </button>
+        <button type="button" data-screen="model" title="Примерка красок на 3D-модели">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m12 2.5 8.5 4.8v9.4L12 21.5l-8.5-4.8V7.3L12 2.5Z" />
+            <path d="M3.5 7.3 12 12l8.5-4.7M12 12v9.5" />
+          </svg>
+          <span>3D</span>
+        </button>
+        <button type="button" data-screen="journal" title="Журнал проектов">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3" y="4" width="5" height="16" rx="1.5" />
+            <rect x="9.5" y="4" width="5" height="11" rx="1.5" />
+            <rect x="16" y="4" width="5" height="7" rx="1.5" />
+          </svg>
+          <span>Журнал</span>
+        </button>
+      </nav>
 
-        <div class="empty" id="empty">
-          <div class="empty-card">
-            <svg class="empty-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <rect x="6" y="9" width="36" height="30" rx="6" />
-              <circle cx="17" cy="20" r="3.5" />
-              <path d="m7 34 10.5-9 7.5 6.5 6-5 10 8.5" />
-            </svg>
-            <h1>Открой фото</h1>
-            <p>Перетащи картинку в окно, вставь из буфера через Ctrl+V или выбери файл.</p>
-            <button class="btn primary" id="pickFile" type="button">Выбрать фото</button>
+      <!-- ───── Пипетка ───── -->
+      <section class="screen split" id="screen-pipette">
+        <main class="stage" id="stage">
+          <canvas class="view" id="view"></canvas>
+
+          <div class="empty" id="empty">
+            <div class="empty-card">
+              <svg class="empty-icon" viewBox="0 0 48 48" aria-hidden="true">
+                <rect x="6" y="9" width="36" height="30" rx="6" />
+                <circle cx="17" cy="20" r="3.5" />
+                <path d="m7 34 10.5-9 7.5 6.5 6-5 10 8.5" />
+              </svg>
+              <h1>Открой фото</h1>
+              <p>Перетащи картинку в окно, вставь из буфера через Ctrl+V или выбери файл.</p>
+              <button class="btn primary" id="pickFile" type="button">Выбрать фото</button>
+            </div>
           </div>
-        </div>
 
-        <div class="toolbar" id="toolbar" hidden>
-          <button class="btn" id="openBtn" type="button">Другое фото</button>
-          <span class="sep"></span>
-          <label class="field">
-            <span>Размер пипетки</span>
-            <input type="range" id="radius" min="0" max="40" step="1" />
-            <output id="radiusOut"></output>
-          </label>
-          <span class="sep"></span>
-          <div class="seg" id="modeSeg" role="group" aria-label="Как считать цвет в круге">
-            <button type="button" data-mode="avg" title="Усреднить всё, что попало в круг">Среднее</button>
-            <button type="button" data-mode="dom" title="Взять цвет, которого в круге больше всего">Доминирующий</button>
-          </div>
-        </div>
-
-        <div class="zoom" id="zoom" hidden>
-          <button type="button" id="zoomOut" title="Уменьшить">−</button>
-          <span id="zoomVal">100%</span>
-          <button type="button" id="zoomIn" title="Увеличить">+</button>
-          <button type="button" id="zoomFit" class="wide" title="Показать фото целиком">Вписать</button>
-        </div>
-        <div class="hint" id="hint" hidden>Клик — взять цвет · колесо — масштаб · правая кнопка — двигать фото</div>
-
-        <div class="loupe" id="loupe" hidden>
-          <canvas id="loupeCanvas"></canvas>
-          <span id="loupeHex"></span>
-        </div>
-        <div class="drop-veil" id="dropVeil" hidden><span>Отпусти, чтобы открыть фото</span></div>
-      </main>
-
-      <aside class="panel">
-        <section class="current">
-          <div class="swatch" id="swatch"></div>
-          <div class="current-info">
-            <label class="hex">
-              <span>HEX</span>
-              <input id="hexInput" spellcheck="false" maxlength="7" placeholder="#RRGGBB" autocomplete="off" />
+          <div class="toolbar" id="toolbar" hidden>
+            <button class="btn" id="openBtn" type="button">Другое фото</button>
+            <button class="btn" id="savePhoto" type="button" title="Сохранить это фото в текущий проект">В журнал</button>
+            <span class="sep"></span>
+            <label class="field">
+              <span>Пипетка</span>
+              <input type="range" id="radius" min="0" max="40" step="1" />
+              <output id="radiusOut"></output>
             </label>
-            <div class="rgb" id="rgbText">Кликни по фото или впиши цвет</div>
+            <span class="sep"></span>
+            <div class="seg" id="modeSeg" role="group" aria-label="Как считать цвет в круге">
+              <button type="button" data-mode="avg" title="Усреднить всё, что попало в круг">Среднее</button>
+              <button type="button" data-mode="dom" title="Взять цвет, которого в круге больше всего">Доминирующий</button>
+            </div>
           </div>
-          <button class="icon-btn" id="copyHex" type="button" title="Скопировать HEX" disabled>
-            <svg viewBox="0 0 20 20" aria-hidden="true">
-              <rect x="7" y="7" width="9.5" height="9.5" rx="2" fill="none" stroke="currentColor" stroke-width="1.6" />
-              <path d="M13 4.5H5.5a2 2 0 0 0-2 2V14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
-            </svg>
+
+          <div class="zoom" id="zoom" hidden>
+            <button type="button" id="zoomOut" title="Уменьшить">−</button>
+            <span id="zoomVal">100%</span>
+            <button type="button" id="zoomIn" title="Увеличить">+</button>
+            <button type="button" id="zoomFit" class="wide" title="Показать фото целиком">Вписать</button>
+          </div>
+          <div class="hint" id="hint" hidden>Клик — взять цвет · колесо — масштаб · правая кнопка — двигать фото</div>
+
+          <div class="loupe" id="loupe" hidden>
+            <canvas id="loupeCanvas"></canvas>
+            <span id="loupeHex"></span>
+          </div>
+        </main>
+
+        <aside class="panel">
+          <section class="current">
+            <div class="swatch" id="swatch"></div>
+            <div class="current-info">
+              <div class="hex-row">
+                <label class="hex">
+                  <span>HEX</span>
+                  <input id="hexInput" spellcheck="false" maxlength="7" placeholder="#RRGGBB" autocomplete="off" />
+                </label>
+                <button class="icon-btn" id="copyHex" type="button" title="Скопировать HEX" disabled>
+                  <svg viewBox="0 0 20 20" aria-hidden="true">
+                    <rect x="7" y="7" width="9.5" height="9.5" rx="2" />
+                    <path d="M13 4.5H5.5a2 2 0 0 0-2 2V14" />
+                  </svg>
+                </button>
+              </div>
+              <div class="current-foot">
+                <span class="rgb" id="rgbText">Кликни по фото или впиши цвет</span>
+                <button class="link" id="addToPalette" type="button" hidden>+ В палитру</button>
+              </div>
+            </div>
+          </section>
+
+          <nav class="tabs" id="tabs">
+            <button type="button" data-tab="matches">Совпадения</button>
+            <button type="button" data-tab="recipe">Рецепт</button>
+            <button type="button" data-tab="palette">Палитра <span class="count" id="paletteCount">0</span></button>
+            <button type="button" data-tab="mine">Мои <span class="count" id="mineCount">0</span></button>
+          </nav>
+
+          <div class="pane" id="pane-matches">
+            <div class="pane-head">
+              <button class="btn drop" id="setsBtn" type="button" title="Какие наборы красок учитывать"></button>
+              <span class="grow"></span>
+              <label class="check"><input type="checkbox" id="onlyMine" /> только мои</label>
+            </div>
+            <div class="pop" id="setsPop" hidden></div>
+            <div class="tones" id="tones" hidden></div>
+            <div class="list" id="matchesList"></div>
+          </div>
+
+          <div class="pane" id="pane-recipe" hidden>
+            <div class="pane-head">
+              <span class="pane-title" id="recipeTitle"></span>
+            </div>
+            <div class="list" id="recipeBody"></div>
+          </div>
+
+          <div class="pane" id="pane-palette" hidden>
+            <div class="pane-head">
+              <select id="projSelect" title="Проект, для которого собирается палитра"></select>
+              <input id="projName" maxlength="60" spellcheck="false" autocomplete="off" hidden />
+              <button class="icon-btn" id="projRename" type="button" title="Переименовать проект">
+                <svg viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="m4 16 .8-3.6L13.5 3.7l2.8 2.8-8.7 8.7L4 16Z" />
+                </svg>
+              </button>
+              <button class="icon-btn" id="projNew" type="button" title="Новый проект">
+                <svg viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M10 4v12M4 10h12" />
+                </svg>
+              </button>
+              <button class="icon-btn" id="projDelete" type="button" title="Удалить проект">
+                <svg viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M4 6h12M8 6V4h4v2M5.8 6l.8 10h6.8l.8-10" />
+                </svg>
+              </button>
+            </div>
+            <div class="list" id="paletteBody"></div>
+          </div>
+
+          <div class="pane" id="pane-mine" hidden>
+            <div class="pane-head">
+              <select id="mineSet" title="Набор красок"></select>
+            </div>
+            <div class="pane-head second">
+              <input type="search" id="mineSearch" placeholder="Название или код" autocomplete="off" spellcheck="false" />
+              <button class="link" id="mineAll" type="button">Отметить все</button>
+              <button class="link" id="mineNone" type="button">Сбросить</button>
+            </div>
+            <div class="list" id="mineList"></div>
+          </div>
+        </aside>
+      </section>
+
+      <!-- ───── 3D ───── -->
+      <section class="screen split" id="screen-model" hidden>
+        <main class="stage" id="stage3d">
+          <div class="three" id="three"></div>
+
+          <div class="empty" id="modelEmpty">
+            <div class="empty-card">
+              <svg class="empty-icon" viewBox="0 0 48 48" aria-hidden="true">
+                <path d="m24 5 17 9.6v18.8L24 43 7 33.4V14.6L24 5Z" />
+                <path d="M7 14.6 24 24l17-9.4M24 24v19" />
+              </svg>
+              <h1>Загрузи модель</h1>
+              <p id="modelEmptyText">Перетащи сюда STL-файл фигурки или выбери его. Модель сохранится в проекте вместе с покраской.</p>
+              <button class="btn primary" id="modelPick" type="button">Выбрать STL</button>
+            </div>
+          </div>
+
+          <div class="toolbar" id="modelBar" hidden>
+            <div class="seg" id="toolSeg" role="group" aria-label="Инструмент"></div>
+            <span class="sep"></span>
+            <label class="field" id="brushField">
+              <span>Размер</span>
+              <input type="range" id="brushSize" min="1" max="30" step="1" value="6" />
+              <output id="brushOut"></output>
+            </label>
+            <label class="field" id="fillField" title="На каком изгибе поверхности заливка останавливается" hidden>
+              <span>До изгиба</span>
+              <input type="range" id="fillAngle" min="10" max="95" step="5" value="35" />
+              <output id="fillOut"></output>
+            </label>
+          </div>
+          <div class="hint" id="modelHint" hidden></div>
+          <div class="busy" id="modelBusy" hidden><span id="modelBusyText"></span></div>
+        </main>
+
+        <aside class="panel">
+          <div class="pane-head">
+            <select id="modelProject" title="Проект, которому принадлежит модель"></select>
+          </div>
+          <div class="list side" id="modelSide"></div>
+        </aside>
+      </section>
+
+      <!-- ───── Журнал ───── -->
+      <section class="screen journal" id="screen-journal" hidden>
+        <header class="board-head">
+          <h1>Журнал проектов</h1>
+          <button class="btn primary" id="journalNew" type="button">+ Новый проект</button>
+        </header>
+        <div class="board" id="board"></div>
+      </section>
+    </div>
+
+    <div class="drawer-veil" id="drawer" hidden>
+      <aside class="drawer">
+        <header class="drawer-head">
+          <input id="dName" maxlength="60" spellcheck="false" autocomplete="off" title="Название проекта" />
+          <button class="icon-btn" id="dClose" type="button" title="Закрыть">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15" /></svg>
           </button>
-        </section>
+        </header>
+        <div class="drawer-body">
+          <div class="seg wide" id="dStatus" role="group" aria-label="Стадия"></div>
 
-        <nav class="tabs" id="tabs">
-          <button type="button" data-tab="matches">Совпадения</button>
-          <button type="button" data-tab="recipe">Рецепт</button>
-          <button type="button" data-tab="mine">Мои краски <span class="count" id="mineCount">0</span></button>
-        </nav>
+          <h3>Фото</h3>
+          <div class="photos" id="dPhotos"></div>
 
-        <div class="pane" id="pane-matches">
-          <div class="pane-head">
-            <span class="pane-title" id="matchesTitle"></span>
-            <label class="check"><input type="checkbox" id="onlyMine" /> только мои</label>
+          <h3>Палитра</h3>
+          <div id="dPalette"></div>
+
+          <h3>Заметки</h3>
+          <textarea id="dNotes" rows="4" maxlength="4000" placeholder="Смола, настройки печати, что не забыть при покраске…"></textarea>
+
+          <div class="actions">
+            <button class="btn" id="dToPipette" type="button">Открыть палитру</button>
+            <button class="btn" id="dTo3d" type="button">3D-примерка</button>
+            <button class="btn" id="dDelete" type="button">Удалить проект</button>
           </div>
-          <div class="list" id="matchesList"></div>
-        </div>
-
-        <div class="pane" id="pane-recipe" hidden>
-          <div class="pane-head">
-            <span class="pane-title" id="recipeTitle"></span>
-          </div>
-          <div class="list" id="recipeBody"></div>
-        </div>
-
-        <div class="pane" id="pane-mine" hidden>
-          <div class="pane-head">
-            <input type="search" id="mineSearch" placeholder="Название или код" autocomplete="off" spellcheck="false" />
-            <button class="link" id="mineAll" type="button">Отметить все</button>
-            <button class="link" id="mineNone" type="button">Сбросить</button>
-          </div>
-          <div class="list" id="mineList"></div>
         </div>
       </aside>
     </div>
 
+    <div class="lightbox" id="lightbox" hidden>
+      <img id="lightboxImg" alt="" />
+      <div class="lightbox-bar">
+        <button class="btn" id="photoToPipette" type="button">Открыть в пипетке</button>
+        <button class="btn" id="photoDelete" type="button">Удалить фото</button>
+        <button class="btn" type="button" data-act="close">Закрыть</button>
+      </div>
+    </div>
+
+    <dialog class="dialog" id="analogs">
+      <header class="dialog-head">
+        <div class="row" id="analogsHead"></div>
+        <button class="icon-btn" id="analogsClose" type="button" title="Закрыть">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15" /></svg>
+        </button>
+      </header>
+      <p class="note">Самые похожие краски в других наборах. Слева исходная, справа аналог.</p>
+      <div class="list" id="analogsList"></div>
+    </dialog>
+
+    <div class="drop-veil" id="dropVeil" hidden><span id="dropText"></span></div>
     <div class="toast" id="toast" hidden></div>
     <input type="file" id="file" accept="image/*" hidden />
+    <input type="file" id="photoFile" accept="image/*" multiple hidden />
+    <input type="file" id="modelFile" accept=".stl" hidden />
 
     <script src="spectra.js"></script>
     <script src="paints.js"></script>
     <script src="color.js"></script>
     <script src="recipe.js"></script>
-    <script src="app.js"></script>
+    <script src="core.js"></script>
+    <script src="pipette.js"></script>
+    <script src="panel.js"></script>
+    <script src="journal.js"></script>
+    <script src="model.js"></script>
   </body>
 </html>

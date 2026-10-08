@@ -79,6 +79,29 @@
     );
   }
 
+  function labToRgb(L, a, b) {
+    const fy = (L + 16) / 116;
+    return xyzToRgb(XN * labFInv(fy + a / 500), YN * labFInv(fy), ZN * labFInv(fy - b / 200));
+  }
+
+  function labFInv(f) {
+    const f3 = f * f * f;
+    return f3 > 216 / 24389 ? f3 : (116 * f - 16) / (24389 / 27);
+  }
+
+  // Тень и блик для объёмной покраски: тот же оттенок, но темнее и светлее.
+  // У краёв шаг по светлоте ужимается: почти чёрному некуда темнеть, почти
+  // белому — светлеть. Блик заодно чуть бледнее, тень чуть насыщеннее.
+  function tones(rgb) {
+    const [L, a, b] = rgbToLab(rgb);
+    const down = Math.max(0, Math.min(16, (L - 4) * 0.6));
+    const up = Math.max(0, Math.min(15, (97 - L) * 0.7));
+    return {
+      shade: labToRgb(L - down, a * 1.05, b * 1.05),
+      highlight: labToRgb(L + up, a * 0.85, b * 0.85),
+    };
+  }
+
   const RAD = Math.PI / 180;
   const POW25_7 = 6103515625;
 
@@ -229,6 +252,8 @@
     rgbToLab,
     xyzToLab,
     labF,
+    labToRgb,
+    tones,
     xyzToRgb,
     deltaE,
     deltaELab,

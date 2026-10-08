@@ -12,9 +12,21 @@ Copyright (c) 2022 Rick Fleuren
 
 Copyright (c) 2025 Ronald van Wijnen
 
+## three.js
+
+Отрисовка 3D-модели, собрано в `src/three-view.js`. https://github.com/mrdoob/three.js
+
+Copyright © 2010-2026 three.js authors
+
+## three-mesh-bvh
+
+Быстрый поиск треугольников под кистью, собрано в `src/three-view.js`. https://github.com/gkjohnson/three-mesh-bvh
+
+Copyright (c) 2018 Garrett Johnson
+
 ## MIT License
 
-Оба проекта распространяются по лицензии MIT:
+Все четыре проекта распространяются по лицензии MIT:
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
