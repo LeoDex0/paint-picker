@@ -1,0 +1,43 @@
+{
+  "name": "paint-picker",
+  "productName": "Paint Picker",
+  "version": "1.0.0",
+  "description": "Пипетка для подбора красок Vallejo Game Color и рецептов смешивания",
+  "author": "LeoDex",
+  "private": true,
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win"
+  },
+  "build": {
+    "appId": "com.leodex.paintpicker",
+    "files": [
+      "main.js",
+      "src/**/*",
+      "build/icon.png"
+    ],
+    "electronLanguages": [
+      "en-US",
+      "ru",
+      "uk"
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "icon": "build/icon.png"
+    },
+    "nsis": {
+      "artifactName": "PaintPicker-Setup.exe"
+    },
+    "portable": {
+      "artifactName": "PaintPicker-Portable.exe"
+    }
+  },
+  "devDependencies": {
+    "electron": "^44.7.0",
+    "electron-builder": "^26.15.3"
+  }
+}

@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; img-src 'self' blob: data:; style-src 'self' 'unsafe-inline'"
+    />
+    <title>Paint Picker — Vallejo Game Color</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <main class="stage" id="stage">
+        <canvas class="view" id="view"></canvas>
+
+        <div class="empty" id="empty">
+          <div class="empty-card">
+            <svg class="empty-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="6" y="9" width="36" height="30" rx="6" />
+              <circle cx="17" cy="20" r="3.5" />
+              <path d="m7 34 10.5-9 7.5 6.5 6-5 10 8.5" />
+            </svg>
+            <h1>Открой фото</h1>
+            <p>Перетащи картинку в окно, вставь из буфера через Ctrl+V или выбери файл.</p>
+            <button class="btn primary" id="pickFile" type="button">Выбрать фото</button>
+          </div>
+        </div>
+
+        <div class="toolbar" id="toolbar" hidden>
+          <button class="btn" id="openBtn" type="button">Другое фото</button>
+          <span class="sep"></span>
+          <label class="field">
+            <span>Размер пипетки</span>
+            <input type="range" id="radius" min="0" max="40" step="1" />
+            <output id="radiusOut"></output>
+          </label>
+          <span class="sep"></span>
+          <div class="seg" id="modeSeg" role="group" aria-label="Как считать цвет в круге">
+            <button type="button" data-mode="avg" title="Усреднить всё, что попало в круг">Среднее</button>
+            <button type="button" data-mode="dom" title="Взять цвет, которого в круге больше всего">Доминирующий</button>
+          </div>
+        </div>
+
+        <div class="zoom" id="zoom" hidden>
+          <button type="button" id="zoomOut" title="Уменьшить">−</button>
+          <span id="zoomVal">100%</span>
+          <button type="button" id="zoomIn" title="Увеличить">+</button>
+          <button type="button" id="zoomFit" class="wide" title="Показать фото целиком">Вписать</button>
+        </div>
+        <div class="hint" id="hint" hidden>Клик — взять цвет · колесо — масштаб · правая кнопка — двигать фото</div>
+
+        <div class="loupe" id="loupe" hidden>
+          <canvas id="loupeCanvas"></canvas>
+          <span id="loupeHex"></span>
+        </div>
+        <div class="drop-veil" id="dropVeil" hidden><span>Отпусти, чтобы открыть фото</span></div>
+      </main>
+
+      <aside class="panel">
+        <section class="current">
+          <div class="swatch" id="swatch"></div>
+          <div class="current-info">
+            <label class="hex">
+              <span>HEX</span>
+              <input id="hexInput" spellcheck="false" maxlength="7" placeholder="#RRGGBB" autocomplete="off" />
+            </label>
+            <div class="rgb" id="rgbText">Кликни по фото или впиши цвет</div>
+          </div>
+          <button class="icon-btn" id="copyHex" type="button" title="Скопировать HEX" disabled>
+            <svg viewBox="0 0 20 20" aria-hidden="true">
+              <rect x="7" y="7" width="9.5" height="9.5" rx="2" fill="none" stroke="currentColor" stroke-width="1.6" />
+              <path d="M13 4.5H5.5a2 2 0 0 0-2 2V14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+            </svg>
+          </button>
+        </section>
+
+        <nav class="tabs" id="tabs">
+          <button type="button" data-tab="matches">Совпадения</button>
+          <button type="button" data-tab="recipe">Рецепт</button>
+          <button type="button" data-tab="mine">Мои краски <span class="count" id="mineCount">0</span></button>
+        </nav>
+
+        <div class="pane" id="pane-matches">
+          <div class="pane-head">
+            <span class="pane-title" id="matchesTitle"></span>
+            <label class="check"><input type="checkbox" id="onlyMine" /> только мои</label>
+          </div>
+          <div class="list" id="matchesList"></div>
+        </div>
+
+        <div class="pane" id="pane-recipe" hidden>
+          <div class="pane-head">
+            <span class="pane-title" id="recipeTitle"></span>
+          </div>
+          <div class="list" id="recipeBody"></div>
+        </div>
+
+        <div class="pane" id="pane-mine" hidden>
+          <div class="pane-head">
+            <input type="search" id="mineSearch" placeholder="Название или код" autocomplete="off" spellcheck="false" />
+            <button class="link" id="mineAll" type="button">Отметить все</button>
+            <button class="link" id="mineNone" type="button">Сбросить</button>
+          </div>
+          <div class="list" id="mineList"></div>
+        </div>
+      </aside>
+    </div>
+
+    <div class="toast" id="toast" hidden></div>
+    <input type="file" id="file" accept="image/*" hidden />
+
+    <script src="spectra.js"></script>
+    <script src="paints.js"></script>
+    <script src="color.js"></script>
+    <script src="recipe.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
