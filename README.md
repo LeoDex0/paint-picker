@@ -6,7 +6,7 @@
 
 ## Скачать
 
-[**PaintPicker-Setup.exe**](https://github.com/LeoDex0/paint-picker/releases/latest/download/PaintPicker-Setup.exe) — установщик для Windows, около 100 МБ.
+[**PaintPicker-Setup.exe**](https://github.com/LeoDex0/paint-picker/releases/latest/download/PaintPicker-Setup.exe): установщик для Windows, около 100 МБ.
 
 При первом запуске Windows покажет окно «Система Windows защитила ваш компьютер», потому что файл не подписан. Нажми «Подробнее», затем «Выполнить в любом случае».
 
@@ -17,11 +17,11 @@
 ### Пипетка
 
 - Фото можно перетащить в окно, вставить через Ctrl+V или выбрать файлом. Клик берёт цвет, колесо меняет масштаб, правая кнопка двигает фото.
-- **Совпадения.** Ближайшие краски с процентом совпадения, а над списком — краска для тени и для блика, чтобы красить с объёмом.
-- **Наборы красок.** Vallejo (Game Color, Model Color, Game Air, Model Air), Citadel (Base и Layer), Army Painter (Warpaints и Warpaints Fanatic), AK 3rd Gen — всего около 1460 красок. Включаются кнопкой «Набор» над списком.
+- **Совпадения.** Ближайшие краски с процентом совпадения. Над списком краска для тени и для блика, чтобы красить с объёмом.
+- **Наборы красок.** Vallejo (Game Color, Model Color, Game Air, Model Air), Citadel (Base и Layer), Army Painter (Warpaints и Warpaints Fanatic), AK 3rd Gen, всего около 1460 красок. Включаются кнопкой «Набор» над списком.
 - **Аналоги.** Клик по любой краске показывает самые похожие краски в остальных наборах.
 - **Рецепт.** Подбирает смесь из двух-трёх красок, отмеченных во вкладке «Мои»: сколько частей каждой взять и какой цвет выйдет.
-- **Палитра.** Кнопка «+ В палитру» складывает цвета фигурки в проект. Для каждого цвета видно основную краску, тень и блик, а внизу — список «Докупить», который можно скопировать.
+- **Палитра.** Кнопка «+ В палитру» складывает цвета фигурки в проект. Для каждого цвета видно основную краску, тень и блик, а внизу список «Докупить», который можно скопировать.
 
 ### 3D
 
@@ -62,8 +62,8 @@ npm run dist
 
 ## Откуда данные
 
-- Цвета красок — [miniature-paints](https://github.com/Arcturus5404/miniature-paints), MIT. База пересобирается командой `node scripts/build-paints.js папка_с_таблицами`.
-- Спектральные таблицы для смешивания — [spectral.js](https://github.com/rvanwijnen/spectral.js), MIT.
-- 3D — [three.js](https://github.com/mrdoob/three.js) и [three-mesh-bvh](https://github.com/gkjohnson/three-mesh-bvh), MIT.
+- Цвета красок: [miniature-paints](https://github.com/Arcturus5404/miniature-paints), MIT. База пересобирается командой `node scripts/build-paints.js папка_с_таблицами`.
+- Спектральные таблицы для смешивания: [spectral.js](https://github.com/rvanwijnen/spectral.js), MIT.
+- 3D: [three.js](https://github.com/mrdoob/three.js) и [three-mesh-bvh](https://github.com/gkjohnson/three-mesh-bvh), MIT.
 
 Тексты лицензий лежат в `THIRD-PARTY.md`.
