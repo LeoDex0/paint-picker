@@ -2,6 +2,8 @@
 
 Помощник для тех, кто печатает фигурки и красит их. Берёт цвет с фото, подбирает под него краски, собирает палитру на всю фигурку, даёт примерить её на 3D-модели и ведёт журнал проектов.
 
+![Paint Picker](.github/preview.jpg)
+
 ## Скачать
 
 [**PaintPicker-Setup.exe**](https://github.com/LeoDex0/paint-picker/releases/latest/download/PaintPicker-Setup.exe) — установщик для Windows, около 100 МБ.
